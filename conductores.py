@@ -1,6 +1,7 @@
 from db import crear_conexion_bd
-
+from colorama import Fore, Style, init
 import sqlite3
+
 
 def crear_conexion_bd():
     conexion = sqlite3.connect('flota.db')
@@ -103,7 +104,10 @@ def listar_conductores():
     else:
         print("\nLista de conductores:")
         for conductor in conductores:
-            print(f"ID: {conductor[0]}, Nombre: {conductor[1]}, Tipo: {conductor[2]}, ID Pareja: {conductor[3]}")
-
+            print(f"{Fore.CYAN}ID: {Fore.YELLOW}{conductor[0]}, "
+                  f"{Fore.CYAN}Nombre: {Fore.WHITE}{conductor[1]}, "
+                  f"{Fore.CYAN}Tipo: {Fore.RED}{conductor[2]}, "
+                  f"{Fore.CYAN}ID Pareja: {Fore.YELLOW}{conductor[3]}{Style.RESET_ALL}")
+                
     conexion.close()
 

@@ -82,9 +82,9 @@ def menu_nombramientos():
         print(Fore.CYAN + "\n-- Menú de Nombramientos --")
         print(Fore.GREEN + "[1] Agregar Nombramiento")
         print(Fore.GREEN + "[2] Listar Nombramientos por Fecha")
-        print(Fore.GREEN + "[3] Editar Nombramiento")
-        print(Fore.GREEN + "[4] Eliminar Nombramiento por conductor")
-        print(Fore.GREEN + "[5] Eliminar Nombramiento por fecha")
+        print(Fore.WHITE + "[3] Editar Nombramiento")
+        print(Fore.YELLOW + "[4] Eliminar Nombramiento por conductor")
+        print(Fore.YELLOW + "[5] Eliminar Nombramiento por fecha")
         print(Fore.MAGENTA + "[6] Volver al menú principal")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
@@ -130,8 +130,8 @@ def main():
         print(Fore.WHITE + "[2] Vehículos")
         print(Fore.WHITE + "[3] Líneas")
         print(Fore.WHITE + "[4] Nombramientos")  # Añadir opción para Nombramientos
-        print(Fore.WHITE + "[5] Suma Días y horas de trabajo")  # Añadir opción para Nombramientos
-        print(Fore.WHITE + "[6] Días seguidos de trabajo")  
+        print(Fore.WHITE + "[5] Suma Días y horas totales de trabajo")  # Añadir opción para Nombramientos
+        print(Fore.WHITE + "[6] Menú Días seguidos de trabajo")  
         print(Fore.MAGENTA + "[7] Salir")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 

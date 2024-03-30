@@ -105,10 +105,10 @@ def menu_nombramientos():
 
 def menu_dias_de_trabajo_seguido():
     while True:
-        print("\n-- Menú de Dias seguidos de trabajo --")
-        print("[1] Analizar días consecutivos")
-        print("[2] Volver al menú principal")
-        opcion = input("Elige una opción: ")
+        print(Fore.CYAN + "\n-- Menú de Dias seguidos de trabajo --")
+        print(Fore.GREEN + "[1] Analizar días consecutivos")
+        print(Fore.MAGENTA + "[2] Volver al menú principal")
+        opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
             # Primero obtenemos las fechas de trabajo para todos los conductores
@@ -118,7 +118,7 @@ def menu_dias_de_trabajo_seguido():
         elif opcion == "2":
             break
         else:
-            print("Opción no válida. Por favor, intenta de nuevo.")
+            print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
 
 
         
@@ -157,3 +157,4 @@ def main():
 if __name__ == '__main__':
     crear_conexion_bd()
     main()
+

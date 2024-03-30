@@ -8,6 +8,15 @@ from exportar_importar import *
 from db import crear_conexion_bd
 from colorama import Fore, Style, init
 
+import os
+
+def limpiar_pantalla():
+    # Comando dependiendo del sistema operativo
+    comando = 'cls' if os.name == 'nt' else 'clear'
+    os.system(comando)
+
+# Luego, simplemente llama a esta función cuando necesites limpiar la pantalla
+limpiar_pantalla()
 
 def menu_conductores():
     while True:
@@ -20,17 +29,23 @@ def menu_conductores():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             agregar_conductor()
         elif opcion == "2":
+            limpiar_pantalla()
             listar_conductores()
         elif opcion == "3":
+            limpiar_pantalla()
             eliminar_conductor()
         elif opcion == "4":
+            limpiar_pantalla()
             editar_conductor()
         elif opcion == "5":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
 
 def menu_vehiculos():
     while True:
@@ -43,17 +58,23 @@ def menu_vehiculos():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             agregar_vehiculo()
         elif opcion == "2":
+            limpiar_pantalla()
             listar_vehiculos()
         elif opcion == "3":
+            limpiar_pantalla()
             eliminar_vehiculo()
         elif opcion == "4":
+            limpiar_pantalla()
             editar_vehiculo()
         elif opcion == "5":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
 
 def menu_lineas():
     while True:
@@ -66,17 +87,23 @@ def menu_lineas():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             agregar_linea()
         elif opcion == "2":
+            limpiar_pantalla()
             listar_lineas()
         elif opcion == "3":
+            limpiar_pantalla()
             eliminar_linea()
         elif opcion == "4":
+            limpiar_pantalla()
             editar_linea()
         elif opcion == "5":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
 
 def menu_nombramientos():
     while True:
@@ -91,21 +118,29 @@ def menu_nombramientos():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             agregar_nombramiento()
         elif opcion == "2":
+            limpiar_pantalla()
             listar_nombramientos_por_fecha()
         elif opcion == "3":
+            limpiar_pantalla()
             editar_nombramiento()
         elif opcion == "4":
+            limpiar_pantalla()
             eliminar_nombramiento()
         elif opcion == "5":
+            limpiar_pantalla()
             eliminar_nombramientos_por_fecha()
         elif opcion == "6":
+            limpiar_pantalla()
             listar_nombramientos_por_conductor()
         elif opcion == "7":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
 
 def menu_dias_de_trabajo_seguido():
     while True:
@@ -115,14 +150,17 @@ def menu_dias_de_trabajo_seguido():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             # Primero obtenemos las fechas de trabajo para todos los conductores
             fechas_por_conductor = obtener_fechas_trabajo_conductor()
             # Luego, pasamos esas fechas a la función para analizar
             analizar_dias_consecutivos(fechas_por_conductor)
         elif opcion == "2":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
 
 def menu_exportar_importar():
     while True:
@@ -133,17 +171,23 @@ def menu_exportar_importar():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             importar_datos_excel()
         elif opcion == "2":
+            limpiar_pantalla()
             exportar_datos_excel()
         elif opcion == "3":
+            limpiar_pantalla()
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+
         
 
 def main():
     while True:
+        
+
         print(Fore.CYAN + "\n-- Menú Principal --")
         print(Fore.WHITE + "[1] Conductores")
         print(Fore.WHITE + "[2] Vehículos")
@@ -156,25 +200,32 @@ def main():
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
+            limpiar_pantalla()
             menu_conductores()
         elif opcion == "2":
+            limpiar_pantalla()
             menu_vehiculos()
         elif opcion == "3":
+            limpiar_pantalla()
             menu_lineas()
         elif opcion == "4":  # Llama al menú de Nombramientos
+            limpiar_pantalla()
             menu_nombramientos()
-        elif opcion == "5":  
+        elif opcion == "5":
+            limpiar_pantalla()
             sumar_horas_dias_conductores()
-        elif opcion == "6":  
+        elif opcion == "6":
+            limpiar_pantalla()
             menu_dias_de_trabajo_seguido()
-        elif opcion == "7":  
+        elif opcion == "7": 
+            limpiar_pantalla()
             menu_exportar_importar()
         elif opcion == "8":
+            limpiar_pantalla()
             print(Fore.LIGHTYELLOW_EX + "Saliendo del programa...")
             break
         else:
             print(Fore.RED + " Opción no válida. Por favor, intenta de nuevo.")
-
 
 if __name__ == '__main__':
     crear_conexion_bd()

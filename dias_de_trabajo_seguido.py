@@ -34,19 +34,26 @@ def obtener_fechas_trabajo_conductor():
 
 
 def analizar_dias_consecutivos(fechas_por_conductor):
-    # Supongamos que 'fechas_por_conductor' es una lista de tuplas (id_conductor, 'fecha')
     conductor_actual = None
     secuencia_actual = 1
     max_secuencia = 0
     fecha_anterior = None
 
-    for id_conductor, fecha_str in fechas_por_conductor:
-        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
+    resultados = {}  # Para almacenar la secuencia máxima de cada conductor
+
+    for id_conductor, fecha_str in fechas_por_conductor + [(None, None)]:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d") if fecha_str else None
+
         if id_conductor != conductor_actual:
-            # Nuevo conductor, reinicia el conteo
+            if conductor_actual is not None:
+                # Guardar el resultado de secuencia máxima para el conductor actual antes de reiniciar para el nuevo conductor
+                max_secuencia = max(max_secuencia, secuencia_actual)
+                resultados[conductor_actual] = max_secuencia
+            
+            # Reiniciar para el nuevo conductor
             conductor_actual = id_conductor
-            max_secuencia = max(max_secuencia, secuencia_actual)
             secuencia_actual = 1
+            max_secuencia = 0
         elif fecha - fecha_anterior == timedelta(days=1):
             # Día consecutivo de trabajo
             secuencia_actual += 1
@@ -54,10 +61,9 @@ def analizar_dias_consecutivos(fechas_por_conductor):
             # Interrupción en la secuencia, reinicia el conteo
             max_secuencia = max(max_secuencia, secuencia_actual)
             secuencia_actual = 1
+
         fecha_anterior = fecha
 
-        print(f"Conductor {id_conductor} tiene una secuencia máxima de {max_secuencia} días seguidos de trabajo.")
-
-# Llamar a la función con los resultados obtenidos de la base de datos
-fechas_trabajo = obtener_fechas_trabajo_conductor()
-analizar_dias_consecutivos(fechas_trabajo)
+    # Imprimir los resultados
+    for conductor, max_dias in resultados.items():
+        print(f"Conductor {conductor} tiene una secuencia máxima de {max_dias} días seguidos de trabajo.")

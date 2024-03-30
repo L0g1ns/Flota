@@ -120,9 +120,7 @@ def menu_dias_de_trabajo_seguido():
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
 
-
-        
-
+       
 def main():
     while True:
         print(Fore.CYAN + "\n-- Menú Principal --")

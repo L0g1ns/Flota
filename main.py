@@ -1,6 +1,6 @@
-from conductores import agregar_conductor, listar_conductores, eliminar_conductor, editar_conductor, crear_conexion_bd
-from vehiculos import agregar_vehiculo, listar_vehiculos, eliminar_vehiculo, editar_vehiculo, crear_conexion_bd
-from lineas import agregar_linea, listar_lineas, eliminar_linea, editar_linea, crear_conexion_bd
+from conductores import *
+from vehiculos import *
+from lineas import *
 from nombramientos import *
 from sumar_horas_dias_conductores import *
 from dias_de_trabajo_seguido import *

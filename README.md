@@ -2,3 +2,9 @@ Para iniciar el programa despues de haber descargado el repositorio simplemente 
 
 ![main](https://github.com/L0g1ns/Flota/assets/145047663/7a888918-3c91-4cff-808b-1657df58cc80)
 
+Una vez iniciado entraremos por defecto en el menú principal, donde podremos selecionar con números el menú al que queremos acceder
+
+![opcionmenu](https://github.com/L0g1ns/Flota/assets/145047663/d930813e-5f62-471b-81a3-67c27df003d7)
+
+![opcion2](https://github.com/L0g1ns/Flota/assets/145047663/22658a89-a755-4898-b108-6ac462ef3a00)
+

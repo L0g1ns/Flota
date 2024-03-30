@@ -1,8 +1,6 @@
 from db import crear_conexion_bd  # Asegúrate de que esto coincida con el nombre de la función en tu módulo db
-
-
-
 import sqlite3
+from colorama import Fore, Style, init
 
 def crear_conexion_bd():
     try:
@@ -19,11 +17,19 @@ def sumar_horas_dias_conductores():
     
     # Consulta SQL para sumar horas y contar días trabajados por conductor
     consulta = '''
-    SELECT conductores.id_driver, conductores.name_driver, SUM(nombramientos.horas) AS total_horas, COUNT(DISTINCT nombramientos.fecha) AS dias_trabajados
-    FROM nombramientos
-    INNER JOIN conductores ON nombramientos.id_conductor = conductores.id_driver
-    GROUP BY conductores.id_driver, conductores.name_driver
-    ORDER BY conductores.id_driver;
+    SELECT 
+        conductores.id_driver, 
+        conductores.name_driver, 
+        SUM(nombramientos.horas) AS total_horas, 
+        COUNT(DISTINCT nombramientos.fecha) AS dias_trabajados
+    FROM 
+        nombramientos
+    INNER JOIN 
+        conductores 
+        ON nombramientos.id_conductor = conductores.id_driver
+    GROUP BY 
+        conductores.id_driver
+
     '''
     
     try:
@@ -33,7 +39,10 @@ def sumar_horas_dias_conductores():
         if resultados:
             print("Horas y días trabajados por cada conductor:")
             for resultado in resultados:
-                print(f"ID Conductor: {resultado[0]}, Nombre: {resultado[1]}, Total Horas: {resultado[2]}, Días Trabajados: {resultado[3]}")
+                print(f"{Fore.CYAN}ID Conductor: {Fore.YELLOW}{resultado[0]}, "
+                    f"{Fore.CYAN}Nombre: {Fore.WHITE}{resultado[1]}, "
+                    f"{Fore.CYAN}Total Horas: {Fore.RED}{resultado[2]}, "
+                    f"{Fore.CYAN}Días Trabajados: {Fore.GREEN}{resultado[3]}{Style.RESET_ALL}")
         else:
             print("No se encontraron registros de trabajo para los conductores.")
             

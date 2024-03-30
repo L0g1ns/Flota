@@ -4,6 +4,7 @@ from lineas import *
 from nombramientos import *
 from sumar_horas_dias_conductores import *
 from dias_de_trabajo_seguido import *
+from exportar_importar import *
 from db import crear_conexion_bd
 from colorama import Fore, Style, init
 
@@ -85,7 +86,8 @@ def menu_nombramientos():
         print(Fore.WHITE + "[3] Editar Nombramiento")
         print(Fore.YELLOW + "[4] Eliminar Nombramiento por conductor")
         print(Fore.YELLOW + "[5] Eliminar Nombramiento por fecha")
-        print(Fore.MAGENTA + "[6] Volver al menú principal")
+        print(Fore.YELLOW + "[6] Nombramientos por Conductor")
+        print(Fore.MAGENTA + "[7] Volver al menú principal")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
@@ -99,6 +101,8 @@ def menu_nombramientos():
         elif opcion == "5":
             eliminar_nombramientos_por_fecha()
         elif opcion == "6":
+            listar_nombramientos_por_conductor()
+        elif opcion == "7":
             break
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
@@ -120,7 +124,24 @@ def menu_dias_de_trabajo_seguido():
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
 
-       
+def menu_exportar_importar():
+    while True:
+        print(Fore.CYAN + "\n-- Menú de Dias seguidos de trabajo --")
+        print(Fore.GREEN + "[1] Importar")
+        print(Fore.MAGENTA + "[2] Exportar")
+        print(Fore.MAGENTA + "[3] Volver al menú principal")
+        opcion = input(Fore.BLUE + "Elige una opción: ")
+
+        if opcion == "1":
+            importar_datos_excel()
+        elif opcion == "2":
+            exportar_datos_excel()
+        elif opcion == "3":
+            break
+        else:
+            print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
+        
+
 def main():
     while True:
         print(Fore.CYAN + "\n-- Menú Principal --")
@@ -129,8 +150,9 @@ def main():
         print(Fore.WHITE + "[3] Líneas")
         print(Fore.WHITE + "[4] Nombramientos")  # Añadir opción para Nombramientos
         print(Fore.WHITE + "[5] Suma Días y horas totales de trabajo")  # Añadir opción para Nombramientos
-        print(Fore.WHITE + "[6] Menú Días seguidos de trabajo")  
-        print(Fore.MAGENTA + "[7] Salir")
+        print(Fore.WHITE + "[6] Menú Días seguidos de trabajo")
+        print(Fore.WHITE + "[7] Menú Importar/Exportar")  
+        print(Fore.MAGENTA + "[8] Salir")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
@@ -145,7 +167,9 @@ def main():
             sumar_horas_dias_conductores()
         elif opcion == "6":  
             menu_dias_de_trabajo_seguido()
-        elif opcion == "7":
+        elif opcion == "7":  
+            menu_exportar_importar()
+        elif opcion == "8":
             print(Fore.LIGHTYELLOW_EX + "Saliendo del programa...")
             break
         else:
@@ -155,4 +179,5 @@ def main():
 if __name__ == '__main__':
     crear_conexion_bd()
     main()
+
 

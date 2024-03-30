@@ -1,14 +1,23 @@
 import sqlite3
 from db import crear_conexion_bd
 from datetime import datetime
+from colorama import Fore, Style, init
 
-def crear_conexion():
-    """Crea y devuelve una conexión a la base de datos."""
-    return sqlite3.connect('flota.db')
+import sqlite3
+
+init(autoreset=True)
+
+def crear_conexion_bd():
+    try:
+        return sqlite3.connect('flota.db')
+    except sqlite3.Error as e:
+        print(f"Error al conectar a la base de datos: {e}")
+        return None
+
 
 
 def solicitar_fecha():
-    """Solicita al usuario una fecha y valida su formato."""
+    # Solicita al usuario una fecha y valida su formato.
     formato_fecha = "%Y-%m-%d"
     while True:
         fecha = input("Introduce la fecha (YYYY-MM-DD): ")
@@ -19,7 +28,7 @@ def solicitar_fecha():
             print("Formato de fecha incorrecto, sigue el formato YYYY-MM-DD.")
 
 def elegir_conductor(fecha):
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
         SELECT id_driver, name_driver FROM conductores WHERE id_driver NOT IN (
@@ -31,7 +40,7 @@ def elegir_conductor(fecha):
 
     conductores_dict = {str(conductor[0]): conductor[1] for conductor in conductores}
     for id_conductor, nombre_conductor in conductores_dict.items():
-        print(f"{id_conductor}: {nombre_conductor}")
+        print(f"{Fore.YELLOW}{id_conductor}: {Fore.WHITE}{nombre_conductor}{Style.RESET_ALL}")
     
     id_conductor = None
     while id_conductor not in conductores_dict:
@@ -42,7 +51,7 @@ def elegir_conductor(fecha):
 
 
 def elegir_vehiculo(fecha):
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
         SELECT id_vehiculo, matricula_vehiculo FROM vehiculos WHERE id_vehiculo NOT IN (
@@ -65,7 +74,7 @@ def elegir_vehiculo(fecha):
 
 
 def elegir_linea(fecha):
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
         SELECT id_linea, nombre_linea FROM lineas WHERE id_linea NOT IN (
@@ -96,7 +105,7 @@ def agregar_nombramiento():
     servicio = input("Servicio: ")
     horas = input("Cantidad de horas: ")
 
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
         INSERT INTO nombramientos (fecha, id_conductor, id_vehiculo, id_linea, tipo_turno, servicio, horas)
@@ -112,7 +121,7 @@ def editar_nombramiento():
     id_nombramiento = input("Escribe el ID del nombramiento que deseas editar: ")
     
     # Obtener los detalles actuales del nombramiento para poder mantener los valores en caso de que el usuario no quiera modificar alguno
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
         SELECT id_vehiculo, id_linea, tipo_turno, servicio, horas
@@ -157,7 +166,7 @@ def eliminar_nombramiento():
     # Confirmación de la acción por parte del usuario
     confirmacion = input("¿Estás seguro de que deseas eliminar este nombramiento? (s/n): ")
     if confirmacion.lower() == 's':
-        conexion = crear_conexion()
+        conexion = crear_conexion_bd()
         cursor = conexion.cursor()
         try:
             cursor.execute('DELETE FROM nombramientos WHERE id_nombramiento = ?', (id_nombramiento,))
@@ -181,7 +190,7 @@ def eliminar_nombramientos_por_fecha():
     # Solicita confirmación del usuario para proceder con la eliminación
     confirmacion = input(f"¿Estás seguro de que deseas eliminar TODOS los nombramientos para {fecha}? (s/n): ")
     if confirmacion.lower() == 's':
-        conexion = crear_conexion()
+        conexion = crear_conexion_bd()
         cursor = conexion.cursor()
         try:
             cursor.execute('DELETE FROM nombramientos WHERE fecha = ?', (fecha,))
@@ -202,7 +211,7 @@ def listar_nombramientos_por_fecha(fecha=None):
     if fecha is None:
         fecha = solicitar_fecha()
 
-    conexion = crear_conexion()
+    conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
     SELECT nombramientos.id_nombramiento, nombramientos.fecha, conductores.id_driver, conductores.name_driver, vehiculos.id_vehiculo, vehiculos.matricula_vehiculo, lineas.id_linea, lineas.nombre_linea,
@@ -221,6 +230,69 @@ def listar_nombramientos_por_fecha(fecha=None):
     if nombramientos:
         print(f"\nNombramientos para {fecha}:")
         for nom in nombramientos:
-            print(f"ID Nombramiento: {nom[0]}, Fecha: {nom[0]}, ID Conductor: {nom[1]}, Conductor: {nom[2]}, ID Vehículo: {nom[3]}, Vehículo: {nom[4]}, ID Línea: {nom[5]}, Línea: {nom[6]}, Turno: {nom[7]}, Servicio: {nom[8]}, Horas: {nom[9]}")
+            print(f"{Fore.GREEN}ID Nombramiento: {Fore.YELLOW}{nom[0]}, "
+                f"{Fore.GREEN}Fecha: {Fore.RED}{nom[1]}, "
+                f"{Fore.GREEN}ID Conductor: {Fore.YELLOW}{nom[2]}, "
+                f"{Fore.GREEN}ID Vehículo: {Fore.YELLOW}{nom[4]}, "
+                f"{Fore.GREEN}ID Línea: {Fore.YELLOW}{nom[6]}, "
+                f"{Fore.GREEN}Turno: {Fore.RED}{nom[8]}, "
+                f"{Fore.GREEN}Servicio: {Fore.RED}{nom[9]}, "
+                f"{Fore.GREEN}Horas: {Fore.RED}{nom[10]}{Style.RESET_ALL}")
     else:
         print("No hay nombramientos para esta fecha.")
+
+def listar_nombramientos_por_conductor():
+    conexion = crear_conexion_bd()
+    if conexion is None:
+        print(f"{Fore.RED}No se pudo establecer la conexión con la base de datos.{Style.RESET_ALL}")
+        return
+    cursor = conexion.cursor()
+    
+    # Primero, listar todos los conductores para permitir al usuario elegir uno
+    cursor.execute("SELECT id_driver, name_driver FROM conductores ORDER BY name_driver")
+    conductores = cursor.fetchall()
+    
+    if not conductores:
+        print(f"{Fore.RED}No se encontraron conductores.{Style.RESET_ALL}")
+        return
+    
+    for conductor in conductores:
+        print(f"{Fore.CYAN}{conductor[0]}: {Fore.YELLOW}{conductor[1]}")
+    
+    id_conductor = input(f"{Fore.GREEN}Por favor, introduce el ID del conductor para ver sus nombramientos: {Style.RESET_ALL}")
+    
+    # Obtener los nombramientos para el conductor seleccionado, incluyendo la línea y el bus
+    consulta = '''
+    SELECT nombramientos.fecha, nombramientos.tipo_turno, nombramientos.servicio, nombramientos.horas,
+           lineas.nombre_linea, vehiculos.id_vehiculo
+    FROM nombramientos
+    JOIN conductores ON nombramientos.id_conductor = conductores.id_driver
+    JOIN vehiculos ON nombramientos.id_vehiculo = vehiculos.id_vehiculo
+    JOIN lineas ON nombramientos.id_linea = lineas.id_linea
+    WHERE nombramientos.id_conductor = ?
+    ORDER BY nombramientos.fecha
+    '''
+    
+    try:
+        cursor.execute(consulta, (id_conductor,))
+        nombramientos = cursor.fetchall()
+        
+        if nombramientos:
+            print(f"{Fore.GREEN}\nNombramientos para el conductor ID {id_conductor}:{Style.RESET_ALL}")
+            for nom in nombramientos:
+                print(f"{Fore.CYAN}Fecha: {Fore.YELLOW}{nom[0]}, "
+                      f"{Fore.CYAN}Turno: {Fore.RED}{nom[1]}, "
+                      f"{Fore.CYAN}Servicio: {Fore.RED}{nom[2]}, "
+                      f"{Fore.CYAN}Horas: {Fore.BLUE}{nom[3]}, "
+                      f"{Fore.CYAN}Línea: {Fore.WHITE}{nom[4]}, "
+                      f"{Fore.CYAN}ID Vehículo: {Fore.RED}{nom[5]}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}No se encontraron nombramientos para el conductor seleccionado.{Style.RESET_ALL}")
+            
+    except sqlite3.Error as e:
+        print(f"{Fore.RED}Error al obtener los nombramientos del conductor: {e}{Style.RESET_ALL}")
+        
+    finally:
+        conexion.close()
+
+

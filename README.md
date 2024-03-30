@@ -8,3 +8,9 @@ Una vez iniciado entraremos por defecto en el menú principal, donde podremos se
 
 ![opcion2](https://github.com/L0g1ns/Flota/assets/145047663/22658a89-a755-4898-b108-6ac462ef3a00)
 
+![opcion3](https://github.com/L0g1ns/Flota/assets/145047663/71eee640-c2b3-4c31-af5a-9ac29f6021c6)
+
+![opcion4](https://github.com/L0g1ns/Flota/assets/145047663/fef19ada-efdc-4bbc-b231-83ccee2eb711)
+
+
+

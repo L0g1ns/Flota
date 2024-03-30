@@ -1,6 +1,9 @@
 from db import crear_conexion_bd
-
+from colorama import Fore, Style, init
+from colorama import init
 import sqlite3
+
+init(autoreset=True)
 
 def crear_conexion_bd():
     conexion = sqlite3.connect('flota.db')
@@ -74,7 +77,7 @@ def editar_linea():
 
     # Pedir al usuario los nuevos valores, permitiendo dejar en blanco para no cambiar
     nuevo_nombre = input("Nueva nombre del linea (deja en blanco para no cambiar): ")
-    nuevo_tipo_linea = input("Nuevo tipo de linea (articulado, standard, micro) (deja en blanco para no cambiar): ")
+    nuevo_tipo_linea = input("Nuevo tipo de linea (Normal, Alta Capacidad, Urbanas Micro, Preferencia Micro, Aeropuerto) (deja en blanco para no cambiar): ")
     nuevo_tipo_linea_bus = input("Nuevo tipo tipo_bus (deja en blanco para no cambiar): ")
 
     # Preparar los nuevos valores, usando los actuales si se deja el campo en blanco
@@ -103,6 +106,7 @@ def listar_lineas():
     else:
         print("\nLista de lineas:")
         for linea in lineas:
-            print(f"ID: {linea[0]}, nombre: {linea[1]}, tipo_linea: {linea[2]}, tipo_bus: {linea[3]}")
+            print(f"{Fore.GREEN}ID: {Fore.YELLOW}{linea[0]}, {Fore.GREEN}nombre: {Fore.WHITE}{linea[1]}, {Fore.GREEN}tipo_linea: {Fore.CYAN}{linea[2]}, {Fore.GREEN}tipo_bus: {Fore.RED}{linea[3]}{Style.RESET_ALL}")
 
     conexion.close()
+

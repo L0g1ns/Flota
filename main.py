@@ -5,6 +5,7 @@ from nombramientos import *
 from sumar_horas_dias_conductores import *
 from dias_de_trabajo_seguido import *
 from exportar_importar import *
+from asignacion_buses_lineas import *
 from db import crear_conexion_bd
 from colorama import Fore, Style, init
 
@@ -182,6 +183,37 @@ def menu_exportar_importar():
         else:
             print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
 
+def menu_asignacion_buses_lineas():
+    while True:
+        print(Fore.CYAN + "\n-- Asignaciones Buses --")
+        print(Fore.GREEN + "[1] Asginar cantidad de buses por línea")
+        print(Fore.GREEN + "[2] Asignar buses que podrían ir en una línea")
+        print(Fore.GREEN + "[3] Eliminar bus de linea")
+        print(Fore.YELLOW + "[4] Listar Cantidad de buses por Línea")
+        print(Fore.YELLOW + "[5] Listar Buses Asignados en lineas")
+        print(Fore.MAGENTA + "[6] Volver al menú principal")
+        opcion = input(Fore.BLUE + "Elige una opción: ")
+
+        if opcion == "1":
+            limpiar_pantalla()
+            asignar_buses_a_linea()
+        elif opcion == "2":
+            limpiar_pantalla()
+            asignar_bus_a_linea()
+        elif opcion == "3":
+            limpiar_pantalla()
+            quitar_bus_de_linea()
+        elif opcion == "4":
+            limpiar_pantalla()
+            listar_lineas_con_buses()
+        elif opcion == "5":
+            limpiar_pantalla()
+            listar_lineas_y_vehiculos()
+        elif opcion == "6":
+            limpiar_pantalla()
+            break
+        else:
+            print(Fore.RED + "Opción no válida. Por favor, intenta de nuevo.")
         
 
 def main():
@@ -192,11 +224,12 @@ def main():
         print(Fore.WHITE + "[1] Conductores")
         print(Fore.WHITE + "[2] Vehículos")
         print(Fore.WHITE + "[3] Líneas")
-        print(Fore.WHITE + "[4] Nombramientos")  # Añadir opción para Nombramientos
-        print(Fore.WHITE + "[5] Suma Días y horas totales de trabajo")  # Añadir opción para Nombramientos
-        print(Fore.WHITE + "[6] Menú Días seguidos de trabajo")
-        print(Fore.WHITE + "[7] Menú Importar/Exportar")  
-        print(Fore.MAGENTA + "[8] Salir")
+        print(Fore.YELLOW + "[4] Nombramientos")  # Añadir opción para Nombramientos
+        print(Fore.GREEN + "[5] Suma Días y horas totales de trabajo")  # Añadir opción para Nombramientos
+        print(Fore.GREEN + "[6] Menú Días seguidos de trabajo")
+        print(Fore.RED + "[7] Menú Importar/Exportar")
+        print(Fore.YELLOW + "[8] Asignaciones Buses")  
+        print(Fore.MAGENTA + "[9] Salir")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
@@ -220,7 +253,10 @@ def main():
         elif opcion == "7": 
             limpiar_pantalla()
             menu_exportar_importar()
-        elif opcion == "8":
+        elif opcion == "8": 
+            limpiar_pantalla()
+            menu_asignacion_buses_lineas()
+        elif opcion == "9":
             limpiar_pantalla()
             print(Fore.LIGHTYELLOW_EX + "Saliendo del programa...")
             break
@@ -230,5 +266,7 @@ def main():
 if __name__ == '__main__':
     crear_conexion_bd()
     main()
+
+
 
 

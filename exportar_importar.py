@@ -1,66 +1,63 @@
 from db import crear_conexion_bd
-from datetime import datetime, timedelta
-from colorama import Fore, Style, init
+import pandas as pd
 import sqlite3
 
-def crear_conexion_bd():
-    try:
-        conexion = sqlite3.connect('flota.db')
-        return conexion
-    except sqlite3.Error as e:
-        print(f"Error al conectar con la base de datos: {e}")
-        return None
+def exportar_datos_excel(nombre_archivo='datos_flota.xlsx'):
+    # Establecer conexión a la base de datos
+    conexion = sqlite3.connect('flota.db')
+    
+    # Crear un writer de Pandas Excel
+    writer = pd.ExcelWriter(nombre_archivo, engine='openpyxl')
+    
+    # Definir las tablas para exportar
+    tablas = ['conductores', 'vehiculos', 'lineas', 'nombramientos']
+    
+    for tabla in tablas:
+        # Leer los datos de cada tabla
+        df = pd.read_sql_query(f"SELECT * FROM {tabla}", conexion)
+        
+        # Escribir los datos en una hoja de Excel
+        df.to_excel(writer, sheet_name=tabla, index=False)
+    
+    # Guardar el archivo Excel
+    writer.save()
+    print(f"Datos exportados exitosamente a '{nombre_archivo}'.")
 
-def obtener_fechas_trabajo_conductor():
-    conexion = crear_conexion_bd()
+
+def importar_o_actualizar(tabla, df, conexion, clave_unica):
     cursor = conexion.cursor()
-    
-    consulta = '''
-    SELECT id_conductor, fecha
-    FROM nombramientos
-    ORDER BY id_conductor, fecha;
-    '''
-    
-    try:
-        cursor.execute(consulta)
-        fechas_por_conductor = cursor.fetchall()
-    except sqlite3.Error as e:
-        print(f"Error al obtener las fechas de trabajo por conductor: {e}")
-        fechas_por_conductor = []
-    finally:
-        conexion.close()
-
-    return fechas_por_conductor
-
-
-
-def analizar_dias_consecutivos(fechas_por_conductor):
-    conductor_actual = None
-    secuencia_actual = 0
-    max_secuencia = 0
-    fecha_anterior = None
-
-    for id_conductor, fecha_str in fechas_por_conductor:
-        if fecha_str is None:
-            continue  # Ignorar si la fecha está vacía o es None
-        fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
-
-        if id_conductor != conductor_actual:
-            # Si cambiamos de conductor, imprimimos la secuencia máxima del anterior y reseteamos contadores
-            if conductor_actual is not None:
-                print(f"{Fore.WHITE}Conductor {Fore.YELLOW}{conductor_actual} {Fore.WHITE}tiene una secuencia máxima de {Fore.RED}{max_secuencia} {Fore.WHITE}días seguidos de trabajo.{Style.RESET_ALL}")
-            conductor_actual = id_conductor
-            max_secuencia = secuencia_actual = 1
-            fecha_anterior = fecha
+    for _, fila in df.iterrows():
+        # Verificar si el registro ya existe
+        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {tabla} WHERE {clave_unica} = ? LIMIT 1)", (fila[clave_unica],))
+        existe = cursor.fetchone()[0]
+        
+        # Preparar la lista de columnas y valores para la sentencia SQL
+        columnas = ', '.join(fila.index)
+        placeholders = ', '.join(['?'] * len(fila))
+        valores = tuple(fila.values)
+        
+        if existe:
+            # Actualizar el registro existente
+            updates = ', '.join([f"{col} = ?" for col in fila.index])
+            cursor.execute(f"UPDATE {tabla} SET {updates} WHERE {clave_unica} = ?", (*valores, fila[clave_unica]))
         else:
-            # Si estamos en el mismo conductor, comparamos las fechas
-            if fecha - fecha_anterior == timedelta(days=1):
-                secuencia_actual += 1
-                max_secuencia = max(max_secuencia, secuencia_actual)
-            else:
-                secuencia_actual = 1
-            fecha_anterior = fecha
+            # Insertar el nuevo registro
+            cursor.execute(f"INSERT INTO {tabla} ({columnas}) VALUES ({placeholders})", valores)
 
-    # Imprimir la secuencia del último conductor después del bucle
-    if conductor_actual is not None:
-        print(f"{Fore.WHITE}Conductor {Fore.YELLOW}{conductor_actual} {Fore.WHITE}tiene una secuencia máxima de {Fore.RED}{max_secuencia} {Fore.WHITE}días seguidos de trabajo.{Style.RESET_ALL}")
+def importar_datos_excel(nombre_archivo='datos_flota.xlsx'):
+    conexion = sqlite3.connect('flota.db')
+
+    tablas_clave_unica = {
+        'conductores': 'id_driver',
+        'vehiculos': 'id_vehiculo',
+        'lineas': 'id_linea',
+        'nombramientos': 'id_nombramiento',
+    }
+
+    for tabla, clave_unica in tablas_clave_unica.items():
+        df = pd.read_excel(nombre_archivo, sheet_name=tabla)
+        importar_o_actualizar(tabla, df, conexion, clave_unica)
+    
+    conexion.commit()
+    conexion.close()
+    print("Datos importados y actualizados exitosamente desde el archivo Excel.")

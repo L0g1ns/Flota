@@ -1,4 +1,4 @@
-from db import crear_conexion_bd  # Asegúrate de que esto coincida con el nombre de la función en tu módulo db
+rom db import crear_conexion_bd  # Asegúrate de que esto coincida con el nombre de la función en tu módulo db
 import sqlite3
 from colorama import Fore, Style, init
 

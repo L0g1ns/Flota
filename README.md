@@ -12,7 +12,6 @@ Una vez iniciado entraremos por defecto en el menú principal, donde podremos se
 
 ![opcion4](https://github.com/L0g1ns/Flota/assets/145047663/fef19ada-efdc-4bbc-b231-83ccee2eb711)
 
-![nombra](https://github.com/L0g1ns/Flota/assets/145047663/f7075f93-19ad-409d-b8ea-834f97fa2158)
 
 
 

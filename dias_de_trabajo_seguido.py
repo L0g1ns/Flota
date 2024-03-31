@@ -64,3 +64,5 @@ def analizar_dias_consecutivos(fechas_por_conductor):
     # Imprimir la secuencia del último conductor después del bucle
     if conductor_actual is not None:
         print(f"{Fore.WHITE}Conductor {Fore.YELLOW}{conductor_actual} {Fore.WHITE}tiene una secuencia máxima de {Fore.RED}{max_secuencia} {Fore.WHITE}días seguidos de trabajo.{Style.RESET_ALL}")
+
+

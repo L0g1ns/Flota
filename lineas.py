@@ -1,9 +1,17 @@
 from db import crear_conexion_bd
 from colorama import Fore, Style, init
-from colorama import init
 import sqlite3
+from prettytable import PrettyTable
 
 init(autoreset=True)
+
+class Color:
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    WHITE = '\033[97m'
+    CYAN = '\033[96m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
 
 def crear_conexion_bd():
     conexion = sqlite3.connect('flota.db')
@@ -83,11 +91,11 @@ def editar_linea():
     # Preparar los nuevos valores, usando los actuales si se deja el campo en blanco
     nombre_final = nuevo_nombre if nuevo_nombre.strip() != "" else linea[1]
     tipo_linea_final = nuevo_tipo_linea if nuevo_tipo_linea.strip() != "" else linea[2]
-    tipo_bus_final = nuevo_tipo_linea_bus if nuevo_tipo_linea_bus.strip() != "" else linea[3]
+    tipo_vehiculo_final = nuevo_tipo_linea_bus if nuevo_tipo_linea_bus.strip() != "" else linea[3]
 
     # Actualizar el linea en la base de datos
     cursor.execute("UPDATE lineas SET nombre_linea = ?, tipo_linea= ?, tipo_bus = ? WHERE id_linea = ?", 
-                   (nombre_final, tipo_linea_final, tipo_bus_final, id_linea))
+                   (nombre_final, tipo_linea_final, tipo_vehiculo_final, id_linea))
     conexion.commit()
     print("linea actualizado exitosamente.")
 
@@ -101,12 +109,27 @@ def listar_lineas():
     cursor.execute('SELECT * FROM lineas')
     lineas = cursor.fetchall()
 
-    if not lineas:
-        print("No hay lineas registrados.")
-    else:
-        print("\nLista de lineas:")
-        for linea in lineas:
-            print(f"{Fore.GREEN}ID: {Fore.YELLOW}{linea[0]}, {Fore.GREEN}nombre: {Fore.WHITE}{linea[1]}, {Fore.GREEN}tipo_linea: {Fore.CYAN}{linea[2]}, {Fore.GREEN}tipo_bus: {Fore.RED}{linea[3]}{Style.RESET_ALL}")
+    # Creando la tabla y asignando los nombres de las columnas con colores
+    tabla = PrettyTable()
+    tabla.field_names = [f"{Color.GREEN}ID{Color.RESET}",
+                         f"{Color.GREEN}Nombre{Color.RESET}",
+                         f"{Color.GREEN}Tipo de Línea{Color.RESET}",
+                         f"{Color.GREEN}Tipo de Bus{Color.RESET}"]
 
+    if not lineas:
+        print("No hay líneas registradas.")
+    else:
+        print("\nLista de líneas:")
+        for linea in lineas:
+            tabla.add_row([
+                f"{Color.YELLOW}{linea[0]}{Color.RESET}",
+                f"{Color.WHITE}{linea[1]}{Color.RESET}",
+                f"{Color.CYAN}{linea[2]}{Color.RESET}",
+                f"{Color.RED}{linea[3]}{Color.RESET}"
+            ])
+        
+        print(tabla)
+                
     conexion.close()
+
 

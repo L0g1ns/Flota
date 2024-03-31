@@ -1,7 +1,14 @@
 from db import crear_conexion_bd
 from colorama import Fore, Style, init
 import sqlite3
+from prettytable import PrettyTable
 
+class Color:
+    CYAN = '\033[96m'
+    YELLOW = '\033[93m'
+    WHITE = '\033[97m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
 
 def crear_conexion_bd():
     conexion = sqlite3.connect('flota.db')
@@ -99,15 +106,26 @@ def listar_conductores():
     cursor.execute('SELECT * FROM conductores')
     conductores = cursor.fetchall()
 
+    tabla = PrettyTable()
+    tabla.field_names = [f"{Color.CYAN}ID{Color.RESET}",
+                         f"{Color.CYAN}Nombre{Color.RESET}",
+                         f"{Color.CYAN}Tipo{Color.RESET}",
+                         f"{Color.CYAN}ID Pareja{Color.RESET}"]
+
     if not conductores:
         print("No hay conductores registrados.")
     else:
         print("\nLista de conductores:")
         for conductor in conductores:
-            print(f"{Fore.CYAN}ID: {Fore.YELLOW}{conductor[0]}, "
-                  f"{Fore.CYAN}Nombre: {Fore.WHITE}{conductor[1]}, "
-                  f"{Fore.CYAN}Tipo: {Fore.RED}{conductor[2]}, "
-                  f"{Fore.CYAN}ID Pareja: {Fore.YELLOW}{conductor[3]}{Style.RESET_ALL}")
+            tabla.add_row([
+                f"{Color.YELLOW}{conductor[0]}{Color.RESET}",
+                f"{Color.WHITE}{conductor[1]}{Color.RESET}",
+                f"{Color.RED}{conductor[2]}{Color.RESET}",
+                f"{Color.YELLOW}{conductor[3]}{Color.RESET}"
+            ])
+        
+        print(tabla)
                 
     conexion.close()
+
 

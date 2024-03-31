@@ -1,7 +1,9 @@
 import sqlite3
 from db import crear_conexion_bd
+from conductores import *
 from datetime import datetime
 from colorama import Fore, Style, init
+from prettytable import PrettyTable
 
 import sqlite3
 
@@ -38,38 +40,61 @@ def elegir_conductor(fecha):
     conductores = cursor.fetchall()
     conexion.close()
 
+    if not conductores:
+        print(f"{Fore.RED}No hay conductores disponibles para esta fecha.{Style.RESET_ALL}")
+        return None
+
+    tabla_conductores = PrettyTable()
+    tabla_conductores.field_names = [f"{Fore.YELLOW}ID Conductor{Style.RESET_ALL}", f"{Fore.WHITE}Nombre Conductor{Style.RESET_ALL}"]
+    for conductor in conductores:
+        tabla_conductores.add_row([f"{Fore.YELLOW}{conductor[0]}{Style.RESET_ALL}", f"{Fore.WHITE}{conductor[1]}{Style.RESET_ALL}"])
+
+    print(tabla_conductores)
+
     conductores_dict = {str(conductor[0]): conductor[1] for conductor in conductores}
-    for id_conductor, nombre_conductor in conductores_dict.items():
-        print(f"{Fore.YELLOW}{id_conductor}: {Fore.WHITE}{nombre_conductor}{Style.RESET_ALL}")
-    
+
     id_conductor = None
     while id_conductor not in conductores_dict:
         id_conductor = input("Escribe el ID del conductor: ")
         if id_conductor not in conductores_dict:
-            print("Selecciona un ID válido de la lista.")
+            print(f"{Fore.RED}Selecciona un ID válido de la lista.{Style.RESET_ALL}")
     return id_conductor
 
 
 def elegir_vehiculo(fecha):
     conexion = crear_conexion_bd()
     cursor = conexion.cursor()
+    # Asegúrate de ajustar la consulta para incluir el tipo de vehículo de tu esquema de base de datos
     cursor.execute('''
-        SELECT id_vehiculo, matricula_vehiculo FROM vehiculos WHERE id_vehiculo NOT IN (
+        SELECT id_vehiculo, matricula_vehiculo, tipo_vehiculo FROM vehiculos WHERE id_vehiculo NOT IN (
             SELECT id_vehiculo FROM nombramientos WHERE fecha = ?
         )
     ''', (fecha,))
     vehiculos = cursor.fetchall()
     conexion.close()
 
-    vehiculos_dict = {str(vehiculo[0]): vehiculo[1] for vehiculo in vehiculos}
-    for id_vehiculo, matricula in vehiculos_dict.items():
-        print(f"{id_vehiculo}: {matricula}")
-    
+    if not vehiculos:
+        print(f"{Fore.RED}No hay vehículos disponibles para esta fecha.{Style.RESET_ALL}")
+        return None
+
+    tabla_vehiculos = PrettyTable()
+    tabla_vehiculos.field_names = [f"{Fore.YELLOW}ID Vehículo{Style.RESET_ALL}", 
+                                   f"{Fore.WHITE}Matrícula{Style.RESET_ALL}", 
+                                   f"{Fore.CYAN}Tipo{Style.RESET_ALL}"]
+    for vehiculo in vehiculos:
+        tabla_vehiculos.add_row([f"{Fore.YELLOW}{vehiculo[0]}{Style.RESET_ALL}", 
+                                 f"{Fore.WHITE}{vehiculo[1]}{Style.RESET_ALL}",
+                                 f"{Fore.CYAN}{vehiculo[2]}{Style.RESET_ALL}"])
+
+    print(tabla_vehiculos)
+
+    vehiculos_dict = {str(vehiculo[0]): (vehiculo[1], vehiculo[2]) for vehiculo in vehiculos}
+
     id_vehiculo = None
     while id_vehiculo not in vehiculos_dict:
-        id_vehiculo = input("Escribe el ID del vehículo: ")
+        id_vehiculo = input(f"{Fore.GREEN}Escribe el ID del vehículo: {Style.RESET_ALL}")
         if id_vehiculo not in vehiculos_dict:
-            print("Selecciona un ID válido de la lista.")
+            print(f"{Fore.RED}Selecciona un ID válido de la lista.{Style.RESET_ALL}")
     return id_vehiculo
 
 
@@ -84,17 +109,25 @@ def elegir_linea(fecha):
     lineas = cursor.fetchall()
     conexion.close()
 
+    if not lineas:
+        print(f"{Fore.RED}No hay líneas disponibles para esta fecha.{Style.RESET_ALL}")
+        return None
+
+    tabla_lineas = PrettyTable()
+    tabla_lineas.field_names = [f"{Fore.YELLOW}ID Línea{Style.RESET_ALL}", f"{Fore.WHITE}Nombre Línea{Style.RESET_ALL}"]
+    for linea in lineas:
+        tabla_lineas.add_row([f"{Fore.YELLOW}{linea[0]}{Style.RESET_ALL}", f"{Fore.WHITE}{linea[1]}{Style.RESET_ALL}"])
+
+    print(tabla_lineas)
+
     lineas_dict = {str(linea[0]): linea[1] for linea in lineas}
-    for id_linea, nombre_linea in lineas_dict.items():
-        print(f"{id_linea}: {nombre_linea}")
-    
+
     id_linea = None
     while id_linea not in lineas_dict:
-        id_linea = input("Escribe el ID de la línea: ")
+        id_linea = input(f"{Fore.GREEN}Escribe el ID de la línea: {Style.RESET_ALL}")
         if id_linea not in lineas_dict:
-            print("Selecciona un ID válido de la lista.")
+            print(f"{Fore.RED}Selecciona un ID válido de la lista.{Style.RESET_ALL}")
     return id_linea
-
 
 def agregar_nombramiento():
     fecha = solicitar_fecha()
@@ -118,6 +151,7 @@ def agregar_nombramiento():
 
 
 def editar_nombramiento():
+    listar_nombramientos_por_fecha()
     id_nombramiento = input("Escribe el ID del nombramiento que deseas editar: ")
     
     # Obtener los detalles actuales del nombramiento para poder mantener los valores en caso de que el usuario no quiera modificar alguno
@@ -214,7 +248,7 @@ def listar_nombramientos_por_fecha(fecha=None):
     conexion = crear_conexion_bd()
     cursor = conexion.cursor()
     cursor.execute('''
-    SELECT nombramientos.id_nombramiento, nombramientos.fecha, conductores.id_driver, conductores.name_driver, vehiculos.id_vehiculo, vehiculos.matricula_vehiculo, lineas.id_linea, lineas.nombre_linea,
+    SELECT nombramientos.id_nombramiento, nombramientos.fecha, conductores.id_driver, vehiculos.id_vehiculo, vehiculos.matricula_vehiculo, lineas.id_linea, lineas.nombre_linea,
        nombramientos.tipo_turno, nombramientos.servicio, nombramientos.horas
     FROM nombramientos
     INNER JOIN conductores ON nombramientos.id_conductor = conductores.id_driver
@@ -222,24 +256,30 @@ def listar_nombramientos_por_fecha(fecha=None):
     INNER JOIN lineas ON nombramientos.id_linea = lineas.id_linea
     WHERE nombramientos.fecha = ?
     ORDER BY nombramientos.fecha;
-
     ''', (fecha,))
     nombramientos = cursor.fetchall()
     conexion.close()
 
     if nombramientos:
-        print(f"\nNombramientos para {fecha}:")
+        tabla = PrettyTable()
+        tabla.field_names = ["ID", "Fecha", "ID Conductor", "ID Vehículo", "ID Línea", "Nombre Línea", "Turno", "Servicio", "Horas"]
         for nom in nombramientos:
-            print(f"{Fore.GREEN}ID Nombramiento: {Fore.YELLOW}{nom[0]}, "
-                f"{Fore.GREEN}Fecha: {Fore.RED}{nom[1]}, "
-                f"{Fore.GREEN}ID Conductor: {Fore.YELLOW}{nom[2]}, "
-                f"{Fore.GREEN}ID Vehículo: {Fore.YELLOW}{nom[4]}, "
-                f"{Fore.GREEN}ID Línea: {Fore.YELLOW}{nom[6]}, "
-                f"{Fore.GREEN}Turno: {Fore.RED}{nom[8]}, "
-                f"{Fore.GREEN}Servicio: {Fore.RED}{nom[9]}, "
-                f"{Fore.GREEN}Horas: {Fore.RED}{nom[10]}{Style.RESET_ALL}")
+            tabla.add_row([
+                f"{Fore.YELLOW}{nom[0]}{Style.RESET_ALL}",
+                f"{Fore.RED}{nom[1]}{Style.RESET_ALL}",
+                f"{Fore.YELLOW}{nom[2]}{Style.RESET_ALL}",
+                f"{Fore.YELLOW}{nom[3]}{Style.RESET_ALL}",
+                f"{Fore.YELLOW}{nom[5]}{Style.RESET_ALL}",
+                f"{Fore.WHITE}{nom[6]}{Style.RESET_ALL}",
+                f"{Fore.RED}{nom[7]}{Style.RESET_ALL}",
+                f"{Fore.RED}{nom[8]}{Style.RESET_ALL}",
+                f"{Fore.RED}{nom[9]}{Style.RESET_ALL}"
+            ])
+        print(f"\nNombramientos para {fecha}:")
+        print(tabla)
     else:
         print("No hay nombramientos para esta fecha.")
+
 
 def listar_nombramientos_por_conductor():
     conexion = crear_conexion_bd()
@@ -251,41 +291,40 @@ def listar_nombramientos_por_conductor():
     # Primero, listar todos los conductores para permitir al usuario elegir uno
     cursor.execute("SELECT id_driver, name_driver FROM conductores ORDER BY name_driver")
     conductores = cursor.fetchall()
-    
-    if not conductores:
-        print(f"{Fore.RED}No se encontraron conductores.{Style.RESET_ALL}")
-        return
-    
-    for conductor in conductores:
-        print(f"{Fore.CYAN}{conductor[0]}: {Fore.YELLOW}{conductor[1]}")
+    listar_conductores()
     
     id_conductor = input(f"{Fore.GREEN}Por favor, introduce el ID del conductor para ver sus nombramientos: {Style.RESET_ALL}")
     
-    # Obtener los nombramientos para el conductor seleccionado, incluyendo la línea y el bus
-    consulta = '''
-    SELECT nombramientos.fecha, nombramientos.tipo_turno, nombramientos.servicio, nombramientos.horas,
-           lineas.nombre_linea, vehiculos.id_vehiculo
-    FROM nombramientos
-    JOIN conductores ON nombramientos.id_conductor = conductores.id_driver
-    JOIN vehiculos ON nombramientos.id_vehiculo = vehiculos.id_vehiculo
-    JOIN lineas ON nombramientos.id_linea = lineas.id_linea
-    WHERE nombramientos.id_conductor = ?
-    ORDER BY nombramientos.fecha
-    '''
-    
     try:
+        consulta = '''
+        SELECT nombramientos.id_nombramiento, nombramientos.fecha, nombramientos.tipo_turno, nombramientos.servicio, nombramientos.horas,
+               lineas.nombre_linea, vehiculos.id_vehiculo
+        FROM nombramientos
+        JOIN conductores ON nombramientos.id_conductor = conductores.id_driver
+        JOIN vehiculos ON nombramientos.id_vehiculo = vehiculos.id_vehiculo
+        JOIN lineas ON nombramientos.id_linea = lineas.id_linea
+        WHERE nombramientos.id_conductor = ?
+        ORDER BY nombramientos.fecha
+        '''
         cursor.execute(consulta, (id_conductor,))
         nombramientos = cursor.fetchall()
         
         if nombramientos:
-            print(f"{Fore.GREEN}\nNombramientos para el conductor ID {id_conductor}:{Style.RESET_ALL}")
+            tabla_nombramientos = PrettyTable()
+            tabla_nombramientos.field_names = ["ID Nombramiento", "Fecha", "Turno", "Servicio", "Horas", "Línea", "ID Vehículo"]
             for nom in nombramientos:
-                print(f"{Fore.CYAN}Fecha: {Fore.YELLOW}{nom[0]}, "
-                      f"{Fore.CYAN}Turno: {Fore.RED}{nom[1]}, "
-                      f"{Fore.CYAN}Servicio: {Fore.RED}{nom[2]}, "
-                      f"{Fore.CYAN}Horas: {Fore.BLUE}{nom[3]}, "
-                      f"{Fore.CYAN}Línea: {Fore.WHITE}{nom[4]}, "
-                      f"{Fore.CYAN}ID Vehículo: {Fore.RED}{nom[5]}{Style.RESET_ALL}")
+                tabla_nombramientos.add_row([
+                    f"{Fore.YELLOW}{nom[0]}{Style.RESET_ALL}",
+                    f"{Fore.CYAN}{nom[1]}{Style.RESET_ALL}",
+                    f"{Fore.YELLOW}{nom[2]}{Style.RESET_ALL}",
+                    f"{Fore.RED}{nom[3]}{Style.RESET_ALL}",
+                    f"{Fore.BLUE}{nom[4]}{Style.RESET_ALL}",
+                    f"{Fore.WHITE}{nom[5]}{Style.RESET_ALL}",
+                    f"{Fore.RED}{nom[6]}{Style.RESET_ALL}"
+                ])
+            
+            print(f"{Fore.GREEN}\nNombramientos para el conductor ID {id_conductor}:{Style.RESET_ALL}")
+            print(tabla_nombramientos)
         else:
             print(f"{Fore.RED}No se encontraron nombramientos para el conductor seleccionado.{Style.RESET_ALL}")
             
@@ -294,5 +333,4 @@ def listar_nombramientos_por_conductor():
         
     finally:
         conexion.close()
-
 

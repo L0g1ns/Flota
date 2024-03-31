@@ -52,9 +52,20 @@ def crear_conexion_bd():
         )
     ''')
 
+    # Crear tabla asignacion buses
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS asignacion_buses_lineas (
+            id_asignacion INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_vehiculo INTEGER NOT NULL,
+            id_linea INTEGER NOT NULL,
+            fecha_asignacion DATE,
+            FOREIGN KEY (id_vehiculo) REFERENCES vehiculos (id_vehiculo),
+            FOREIGN KEY (id_linea) REFERENCES lineas (id_linea)
+        )
+    ''')
+
     conexion.commit()
     conexion.close()
-
     
 
 

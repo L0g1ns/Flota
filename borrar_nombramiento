@@ -1,0 +1,19 @@
+import sqlite3
+
+def borrar_todos_los_nombramientos(db_path='flota.db'):
+    # Conectar a la base de datos
+    conexion = sqlite3.connect(db_path)
+    cursor = conexion.cursor()
+
+    try:
+        # Borrar todos los nombramientos
+        cursor.execute("DELETE FROM nombramientos")
+        conexion.commit()
+        print("Todos los nombramientos han sido borrados exitosamente.")
+    except sqlite3.Error as e:
+        print(f"Ocurrió un error al borrar los nombramientos: {e}")
+    finally:
+        conexion.close()
+
+if __name__ == "__main__":
+    borrar_todos_los_nombramientos()

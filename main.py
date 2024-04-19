@@ -186,30 +186,22 @@ def menu_exportar_importar():
 def menu_asignacion_buses_lineas():
     while True:
         print(Fore.CYAN + "\n-- Asignaciones Buses --")
-        print(Fore.GREEN + "[1] Asginar cantidad de buses por línea")
-        print(Fore.GREEN + "[2] Asignar buses que podrían ir en una línea")
-        print(Fore.GREEN + "[3] Eliminar bus de linea")
-        print(Fore.YELLOW + "[4] Listar Cantidad de buses por Línea")
-        print(Fore.YELLOW + "[5] Listar Buses Asignados en lineas")
-        print(Fore.MAGENTA + "[6] Volver al menú principal")
+        print(Fore.GREEN + "[1] Asignar bus a línea")
+        print(Fore.GREEN + "[2] Eliminar bus de linea")
+        print(Fore.YELLOW + "[3] Listar buses por Línea")
+        print(Fore.MAGENTA + "[4] Volver al menú principal")
         opcion = input(Fore.BLUE + "Elige una opción: ")
 
         if opcion == "1":
             limpiar_pantalla()
-            asignar_buses_a_linea()
+            asignar_bus_a_linea()
         elif opcion == "2":
             limpiar_pantalla()
-            asignar_bus_a_linea()
+            quitar_bus_de_linea()
         elif opcion == "3":
             limpiar_pantalla()
-            quitar_bus_de_linea()
-        elif opcion == "4":
-            limpiar_pantalla()
-            listar_lineas_con_buses()
-        elif opcion == "5":
-            limpiar_pantalla()
             listar_lineas_y_vehiculos()
-        elif opcion == "6":
+        elif opcion == "4":
             limpiar_pantalla()
             break
         else:
@@ -246,7 +238,7 @@ def main():
             menu_nombramientos()
         elif opcion == "5":
             limpiar_pantalla()
-            sumar_horas_dias_conductores()
+            pass
         elif opcion == "6":
             limpiar_pantalla()
             menu_dias_de_trabajo_seguido()

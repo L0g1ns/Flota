@@ -6,21 +6,19 @@ def exportar_datos_excel(nombre_archivo='datos_flota.xlsx'):
     # Establecer conexión a la base de datos
     conexion = sqlite3.connect('flota.db')
     
-    # Crear un writer de Pandas Excel
-    writer = pd.ExcelWriter(nombre_archivo, engine='openpyxl')
-    
-    # Definir las tablas para exportar
-    tablas = ['conductores', 'vehiculos', 'lineas', 'nombramientos']
-    
-    for tabla in tablas:
-        # Leer los datos de cada tabla
-        df = pd.read_sql_query(f"SELECT * FROM {tabla}", conexion)
+    # Utilizar un contexto para manejar el archivo Excel
+    with pd.ExcelWriter(nombre_archivo, engine='openpyxl') as writer:
+        # Definir las tablas para exportar
+        tablas = ['conductores', 'vehiculos', 'lineas', 'nombramientos', 'asignacion_buses_lineas']
         
-        # Escribir los datos en una hoja de Excel
-        df.to_excel(writer, sheet_name=tabla, index=False)
+        for tabla in tablas:
+            # Leer los datos de cada tabla
+            df = pd.read_sql_query(f"SELECT * FROM {tabla}", conexion)
+            
+            # Escribir los datos en una hoja de Excel
+            df.to_excel(writer, sheet_name=tabla, index=False)
     
-    # Guardar el archivo Excel
-    writer.save()
+    # No es necesario llamar a writer.save()
     print(f"Datos exportados exitosamente a '{nombre_archivo}'.")
 
 
@@ -52,6 +50,7 @@ def importar_datos_excel(nombre_archivo='datos_flota.xlsx'):
         'vehiculos': 'id_vehiculo',
         'lineas': 'id_linea',
         'nombramientos': 'id_nombramiento',
+        'asignacion_buses_lineas': 'id_asignacion'
     }
 
     for tabla, clave_unica in tablas_clave_unica.items():
@@ -61,3 +60,4 @@ def importar_datos_excel(nombre_archivo='datos_flota.xlsx'):
     conexion.commit()
     conexion.close()
     print("Datos importados y actualizados exitosamente desde el archivo Excel.")
+
